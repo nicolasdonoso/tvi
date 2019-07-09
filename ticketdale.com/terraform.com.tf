@@ -29,11 +29,19 @@ resource "aws_s3_bucket" "www-ticketdale-com" {
 }
 resource "aws_route53_record" "ticketdale" {
   zone_id = "${data.aws_route53_zone.ticketdale-zone.id}"
-  name    = "${aws_s3_bucket.ticketdale-com.bucket}."
+  name    = "${aws_s3_bucket.ticketdale-com.bucket}"
   type    = "A"
   alias {
     name = "${aws_s3_bucket.ticketdale-com.website_endpoint}"
     zone_id = "Z3AQBSTGFYJSTF"
     evaluate_target_health = false
   }
+}
+
+resource "aws_route53_record" "www" {
+  zone_id = "${data.aws_route53_zone.ticketdale-zone.id}"
+  name    = "www"
+  type    = "CNAME"
+  ttl     = "5"
+  records = ["${aws_s3_bucket.ticketdale-com.bucket}"]
 }

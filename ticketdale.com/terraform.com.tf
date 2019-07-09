@@ -3,7 +3,11 @@ provider "aws" {
   region     = "us-east-1"	
 }	
 
- resource "aws_s3_bucket" "ticketdale.com" {	
+data "aws_route53_zone" "ticketdale-zone" {
+  name = "ticketdale.com."
+}
+
+resource "aws_s3_bucket" "ticketdale-com" {	
   bucket = "ticketdale.com"	
   acl    = "public-read"	
   policy = "${file("policy.json")}"	
@@ -14,7 +18,7 @@ provider "aws" {
   }	
 }	
 
- resource "aws_s3_bucket" "www.ticketdale.com" {	
+resource "aws_s3_bucket" "www-ticketdale-com" {	
   bucket = "www.ticketdale.com"	
   acl    = "public-read"	
   policy = "${file("policy-www.json")}"	
@@ -22,4 +26,14 @@ provider "aws" {
    website {	
     redirect_all_requests_to = "http://ticketdale.com"	
   }	
+}
+resource "aws_route53_record" "ticketdale" {
+  zone_id = "${data.aws_route53_zone.ticketdale-zone.id}"
+  name    = "${aws_s3_bucket.ticketdale-com.bucket}."
+  type    = "A"
+  alias {
+    name = "${aws_s3_bucket.ticketdale-com.website_endpoint}"
+    zone_id = "Z3AQBSTGFYJSTF"
+    evaluate_target_health = false
+  }
 }

@@ -36,7 +36,7 @@ resource "aws_route53_record" "ticketdale" {
   name    = "${aws_s3_bucket.ticketdale-com.bucket}"
   type    = "A"
   alias {
-    name = "${aws_s3_bucket.ticketdale-com.website_endpoint}"
+    name = "${aws_s3_bucket.ticketdale-com.website_domain}"
     zone_id = "Z3AQBSTGFYJSTF"
     evaluate_target_health = false
   }

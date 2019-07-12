@@ -3,6 +3,10 @@ provider "aws" {
   region     = "us-east-1"	
 }	
 
+variable "ttl" {
+  default = "3600"
+}
+
 data "aws_route53_zone" "ticketdale-zone" {
   name = "ticketdale.com."
 }
@@ -36,6 +40,22 @@ resource "aws_route53_record" "ticketdale" {
     zone_id = "Z3AQBSTGFYJSTF"
     evaluate_target_health = false
   }
+}
+
+resource "aws_route53_record" "ticketdale-gsuite" {
+  zone_id = "${data.aws_route53_zone.ticketdale-zone.id}"
+  name    = "${aws_s3_bucket.ticketdale-com.bucket}"
+  type    = "MX"
+  
+  records = [
+    "1 ASPMX.L.GOOGLE.COM",
+    "5 ALT1.ASPMX.L.GOOGLE.COM",
+    "5 ALT2.ASPMX.L.GOOGLE.COM",
+    "10 ASPMX2.GOOGLEMAIL.COM",
+    "10 ASPMX3.GOOGLEMAIL.COM",  
+  ]
+  
+  ttl = "${var.ttl}"
 }
 
 resource "aws_route53_record" "www" {
